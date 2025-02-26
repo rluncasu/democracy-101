@@ -1,95 +1,280 @@
-import Image from "next/image";
+'use client';
+
+import { useEffect, useState } from 'react';
+import Head from 'next/head';
 
 export default function Home() {
+  const [language, setLanguage] = useState('EN');
+
+  // Handle theme switching based on system preference
+  useEffect(() => {
+    const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
+    
+    function updateTheme(e: MediaQueryListEvent | MediaQueryList) {
+      if (e.matches) {
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-bs-theme', 'light');
+      }
+    }
+
+    darkThemeMq.addEventListener('change', updateTheme);
+    updateTheme(darkThemeMq);
+
+    return () => darkThemeMq.removeEventListener('change', updateTheme);
+  }, []);
+
+  // Toggle language function
+  const toggleLanguage = () => {
+    setLanguage(language === 'EN' ? 'RO' : 'EN');
+  };
+
+  // Romanian content
+  const roContent = {
+    pageTitle: "Tipuri de Democrație",
+    constitutionalDemocracy: {
+      title: "Democrație Constituțională",
+      description: "Un sistem politic în care <strong>democrația este limitată și ghidată de o constituție</strong> care garantează drepturi fundamentale, separarea puterilor și statul de drept.",
+      characteristics: {
+        title: "Caracteristici Principale",
+        items: [
+          {
+            title: "Supremația Constituției",
+            description: "Guvernarea este limitată de reguli și principii fundamentale"
+          },
+          {
+            title: "Protecția Drepturilor",
+            description: "Drepturile și libertățile fundamentale sunt protejate împotriva deciziei majorității"
+          },
+          {
+            title: "Echilibrul Puterilor",
+            description: "Puterile legislative, executive și judiciare sunt separate"
+          }
+        ]
+      },
+      examples: {
+        title: "Exemple",
+        countries: ["Statele Unite", "Germania", "Franța"]
+      }
+    },
+    electoralDemocracy: {
+      title: "Democrație Electorală",
+      description: "Un sistem care se concentrează pe <strong>alegeri libere și corecte</strong> fără garanții constituționale puternice pentru a proteja drepturile cetățenilor.",
+      characteristics: {
+        title: "Caracteristici Principale",
+        items: [
+          {
+            title: "Centrată pe Alegeri",
+            description: "Selecție democratică dar posibile tendințe autoritare"
+          },
+          {
+            title: "Stat de Drept Slab",
+            description: "Instituțiile democratice pot fi fragile sau influențate politic"
+          },
+          {
+            title: "Puterea Majorității",
+            description: "Partidul de guvernare poate restricționa drepturi fără verificări constituționale"
+          }
+        ]
+      },
+      examples: {
+        title: "Exemple",
+        countries: ["Rusia", "Turcia", "Venezuela"]
+      }
+    },
+    essentialDifference: {
+      title: "Diferența Esențială",
+      description: "În timp ce <strong class='text-primary'>democrația constituțională</strong> protejează reguli și principii fundamentale chiar și împotriva majorităților politice, <strong class='text-secondary'>democrația electorală</strong> poate permite concentrarea puterii fără mecanisme eficiente de control."
+    }
+  };
+
+  // English content
+  const enContent = {
+    pageTitle: "Types of Democracy",
+    constitutionalDemocracy: {
+      title: "Constitutional Democracy",
+      description: "A political system where <strong>democracy is limited and guided by a constitution</strong> that guarantees fundamental rights, separation of powers, and rule of law.",
+      characteristics: {
+        title: "Key Characteristics",
+        items: [
+          {
+            title: "Constitutional Supremacy",
+            description: "Governance is limited by fundamental rules and principles"
+          },
+          {
+            title: "Rights Protection",
+            description: "Fundamental rights and freedoms are protected from majority rule"
+          },
+          {
+            title: "Power Balance",
+            description: "Legislative, executive, and judicial powers are separated"
+          }
+        ]
+      },
+      examples: {
+        title: "Examples",
+        countries: ["United States", "Germany", "France"]
+      }
+    },
+    electoralDemocracy: {
+      title: "Electoral Democracy",
+      description: "A system focusing on <strong>free and fair elections</strong> without strong constitutional safeguards to protect citizens&apos; rights.",
+      characteristics: {
+        title: "Key Characteristics",
+        items: [
+          {
+            title: "Election-Centric",
+            description: "Democratic selection but possible authoritarian tendencies"
+          },
+          {
+            title: "Weak Rule of Law",
+            description: "Democratic institutions may be fragile or politically influenced"
+          },
+          {
+            title: "Majority Power",
+            description: "Ruling party can restrict rights without constitutional checks"
+          }
+        ]
+      },
+      examples: {
+        title: "Examples",
+        countries: ["Russia", "Turkey", "Venezuela"]
+      }
+    },
+    essentialDifference: {
+      title: "Essential Difference",
+      description: "While <strong class='text-primary'>constitutional democracy</strong> protects fundamental rules and principles even against political majorities, <strong class='text-secondary'>electoral democracy</strong> may allow power concentration without effective control mechanisms."
+    }
+  };
+
+  // Select content based on current language
+  const content = language === 'EN' ? enContent : roContent;
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
+    <>
+      <div className="container py-5">
+        {/* Language Switcher */}
+        <div className="d-flex justify-content-end mb-4">
+          <div className="btn-group" role="group" aria-label="Language Switcher">
+            <button 
+              type="button" 
+              className={`btn ${language === 'EN' ? 'btn-primary' : 'btn-outline-primary'}`}
+              onClick={() => setLanguage('EN')}
+            >
+              EN
+            </button>
+            <button 
+              type="button" 
+              className={`btn ${language === 'RO' ? 'btn-primary' : 'btn-outline-primary'}`}
+              onClick={() => setLanguage('RO')}
+            >
+              RO
+            </button>
+          </div>
+        </div>
+
+        <h1 className="text-center mb-5 display-6">{content.pageTitle}</h1>
+
+        <div className="row g-4 align-items-stretch">
+          {/* Constitutional Democracy Column */}
+          <div className="col-md-6">
+            <div className="card h-100 shadow-sm">
+              <div className="card-header bg-primary bg-opacity-75 text-white py-3">
+                <h2 className="card-title h5 mb-0">{content.constitutionalDemocracy.title}</h2>
+              </div>
+              <div className="card-body">
+                <div className="feature-box mb-4">
+                  <i className="bi bi-book-half fs-3 text-primary mb-2"></i>
+                  <p className="text-md" dangerouslySetInnerHTML={{ __html: content.constitutionalDemocracy.description }}></p>
+                </div>
+
+                <h6 className="mt-4 border-bottom pb-2">{content.constitutionalDemocracy.characteristics.title}</h6>
+                <ul className="list-group list-group-flush">
+                  <li className="list-group-item">
+                    <i className="bi bi-check-circle-fill text-success me-2"></i>
+                    <strong>{content.constitutionalDemocracy.characteristics.items[0].title}</strong>
+                    <p className="mb-0 ms-4 text-body-secondary">{content.constitutionalDemocracy.characteristics.items[0].description}</p>
+                  </li>
+                  <li className="list-group-item">
+                    <i className="bi bi-shield-check text-success me-2"></i>
+                    <strong>{content.constitutionalDemocracy.characteristics.items[1].title}</strong>
+                    <p className="mb-0 ms-4 text-body-secondary">{content.constitutionalDemocracy.characteristics.items[1].description}</p>
+                  </li>
+                  <li className="list-group-item">
+                    <i className="bi bi-diagram-3 text-success me-2"></i>
+                    <strong>{content.constitutionalDemocracy.characteristics.items[2].title}</strong>
+                    <p className="mb-0 ms-4 text-body-secondary">{content.constitutionalDemocracy.characteristics.items[2].description}</p>
+                  </li>
+                </ul>
+
+                <div className="mt-4">
+                  <p className="border-bottom pb-2 fw-bold small">{content.constitutionalDemocracy.examples.title}</p>
+                  <div className="d-flex gap-2 mt-2 flex-wrap">
+                    {content.constitutionalDemocracy.examples.countries.map((country, idx) => (
+                      <span key={idx} className="badge bg-primary">{country}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Electoral Democracy Column */}
+          <div className="col-md-6">
+            <div className="card h-100 shadow-sm">
+              <div className="card-header bg-secondary bg-opacity-75 text-white py-3">
+                <h2 className="card-title h5 mb-0">{content.electoralDemocracy.title}</h2>
+              </div>
+              <div className="card-body">
+                <div className="feature-box mb-4">
+                  <i className="bi bi-people fs-3 text-secondary mb-2"></i>
+                  <p className="text-md" dangerouslySetInnerHTML={{ __html: content.electoralDemocracy.description }}></p>
+                </div>
+
+                <h6 className="mt-4 border-bottom pb-2">{content.electoralDemocracy.characteristics.title}</h6>
+                <ul className="list-group list-group-flush">
+                  <li className="list-group-item">
+                    <i className="bi bi-archive text-secondary me-2"></i>
+                    <strong>{content.electoralDemocracy.characteristics.items[0].title}</strong>
+                    <p className="mb-0 ms-4 text-body-secondary">{content.electoralDemocracy.characteristics.items[0].description}</p>
+                  </li>
+                  <li className="list-group-item">
+                    <i className="bi bi-exclamation-triangle text-secondary me-2"></i>
+                    <strong>{content.electoralDemocracy.characteristics.items[1].title}</strong>
+                    <p className="mb-0 ms-4 text-body-secondary">{content.electoralDemocracy.characteristics.items[1].description}</p>
+                  </li>
+                  <li className="list-group-item">
+                    <i className="bi bi-people-fill text-secondary me-2"></i>
+                    <strong>{content.electoralDemocracy.characteristics.items[2].title}</strong>
+                    <p className="mb-0 ms-4 text-body-secondary">{content.electoralDemocracy.characteristics.items[2].description}</p>
+                  </li>
+                </ul>
+
+                <div className="mt-4">
+                  <p className="border-bottom pb-2 fw-bold small">{content.electoralDemocracy.examples.title}</p>
+                  <div className="d-flex gap-2 mt-2 flex-wrap">
+                    {content.electoralDemocracy.examples.countries.map((country, idx) => (
+                      <span key={idx} className="badge bg-secondary">{country}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Essential Difference Section */}
+        <div className="mt-5">
+          <div className="card shadow-sm">
+            <div className="card-header bg-info bg-opacity-75 text-white">
+              <h3 className="card-title h6 mb-0">{content.essentialDifference.title}</h3>
+            </div>
+            <div className="card-body">
+              <p className="card-text mb-0" dangerouslySetInnerHTML={{ __html: content.essentialDifference.description }}></p>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    </>
   );
 }
