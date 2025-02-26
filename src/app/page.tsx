@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Head from 'next/head';
 
 export default function Home() {
-  const [language, setLanguage] = useState('EN');
+  const [language, setLanguage] = useState('RO');
 
   // Handle theme switching based on system preference
   useEffect(() => {
@@ -153,22 +153,22 @@ export default function Home() {
   return (
     <>
       <div className="container py-5">
-        {/* Language Switcher */}
+        {/* Language Switcher with Flags */}
         <div className="d-flex justify-content-end mb-4">
           <div className="btn-group" role="group" aria-label="Language Switcher">
-            <button 
-              type="button" 
-              className={`btn ${language === 'EN' ? 'btn-primary' : 'btn-outline-primary'}`}
-              onClick={() => setLanguage('EN')}
-            >
-              EN
-            </button>
             <button 
               type="button" 
               className={`btn ${language === 'RO' ? 'btn-primary' : 'btn-outline-primary'}`}
               onClick={() => setLanguage('RO')}
             >
               RO
+            </button>
+            <button 
+              type="button" 
+              className={`btn ${language === 'EN' ? 'btn-primary' : 'btn-outline-primary'}`}
+              onClick={() => setLanguage('EN')}
+            >
+              EN
             </button>
           </div>
         </div>
