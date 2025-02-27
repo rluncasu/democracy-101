@@ -40,6 +40,17 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
+## Language Selection
+
+This project supports multiple languages (English and Romanian) that can be selected in two ways:
+
+1. **Via URL Parameter**: You can append `?lang=en` or `?lang=ro` to the URL to specify the language.
+   Example: `https://democracy-101.templates.workers.dev?lang=en`
+
+2. **Via UI Controls**: Use the language switcher buttons in the top-right corner of the page.
+
+When a language is selected, the URL is automatically updated with the appropriate parameter, making it easy to share language-specific links.
+
 ## Deploying To Production
 
 | Command           | Action                                       |

@@ -1,10 +1,22 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Head from 'next/head';
+import { DynamicMeta } from '@/components/dynamic-meta';
 
 export default function Home() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [language, setLanguage] = useState('RO');
+
+  // Initialize language from URL parameter or default to RO
+  useEffect(() => {
+    const langParam = searchParams.get('lang')?.toUpperCase();
+    if (langParam && (langParam === 'RO' || langParam === 'EN')) {
+      setLanguage(langParam);
+    }
+  }, [searchParams]);
 
   // Handle theme switching based on system preference
   useEffect(() => {
@@ -24,9 +36,16 @@ export default function Home() {
     return () => darkThemeMq.removeEventListener('change', updateTheme);
   }, []);
 
-  // Toggle language function
-  const toggleLanguage = () => {
-    setLanguage(language === 'EN' ? 'RO' : 'EN');
+  // Toggle language function with URL parameter update
+  const toggleLanguage = (newLang: string) => {
+    setLanguage(newLang);
+    
+    // Update URL with language parameter
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('lang', newLang.toLowerCase());
+    
+    // Use replace to avoid adding to browser history stack
+    router.replace(`?${params.toString()}`);
   };
 
   // Romanian content
@@ -152,6 +171,7 @@ export default function Home() {
 
   return (
     <>
+      <DynamicMeta language={language} />
       <div className="container py-5">
         {/* Language Switcher with Flags */}
         <div className="d-flex justify-content-end mb-4">
@@ -159,14 +179,14 @@ export default function Home() {
             <button 
               type="button" 
               className={`btn ${language === 'RO' ? 'btn-primary' : 'btn-outline-primary'}`}
-              onClick={() => setLanguage('RO')}
+              onClick={() => toggleLanguage('RO')}
             >
               RO
             </button>
             <button 
               type="button" 
               className={`btn ${language === 'EN' ? 'btn-primary' : 'btn-outline-primary'}`}
-              onClick={() => setLanguage('EN')}
+              onClick={() => toggleLanguage('EN')}
             >
               EN
             </button>
