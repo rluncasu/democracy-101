@@ -186,5 +186,11 @@ async function generateOgImage(request: NextRequest) {
 
 // Export the GET handler that calls the image generation function
 export async function GET(request: NextRequest) {
-  return generateOgImage(request);
+  const response = await generateOgImage(request);
+  
+  // Add content type header to ensure proper recognition
+  response.headers.set('Content-Type', 'image/png');
+  response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+  
+  return response;
 } 

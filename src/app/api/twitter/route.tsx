@@ -176,14 +176,20 @@ async function generateTwitterImage(request: NextRequest) {
     ),
     {
       width: 1200,
-      height: 630,
+      height: 675,
     }
   );
 }
 
 // Export the GET handler that calls the image generation function
 export async function GET(request: NextRequest) {
-  return generateTwitterImage(request);
+  const response = await generateTwitterImage(request);
+  
+  // Add content type header to ensure proper recognition
+  response.headers.set('Content-Type', 'image/png');
+  response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+  
+  return response;
 }
 
 // Define edge runtime configuration for the GET handler
