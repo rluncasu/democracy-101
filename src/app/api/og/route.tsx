@@ -1,8 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
 
-export const runtime = 'edge';
-
 // Define language type
 type SupportedLanguage = 'en' | 'ro';
 
@@ -48,7 +46,11 @@ const translations: Record<SupportedLanguage, TranslationContent> = {
   }
 };
 
-export async function GET(request: NextRequest) {
+// Separate edge runtime configuration
+export const runtime = 'edge';
+
+// Create a separate function for generating the image
+async function generateOgImage(request: NextRequest) {
   // Get the language from the search params
   const { searchParams } = new URL(request.url);
   const lang = (searchParams.get('lang') || 'en') as SupportedLanguage;
@@ -180,4 +182,9 @@ export async function GET(request: NextRequest) {
       height: 630,
     }
   );
+}
+
+// Export the GET handler that calls the image generation function
+export async function GET(request: NextRequest) {
+  return generateOgImage(request);
 } 
