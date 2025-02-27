@@ -187,6 +187,4 @@ export async function GET(request: NextRequest) {
 }
 
 // Define edge runtime configuration for the GET handler
-export const config = {
-  runtime: 'edge',
-}; 
+export const runtime = 'edge'; 
