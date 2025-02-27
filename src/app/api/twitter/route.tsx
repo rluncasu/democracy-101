@@ -46,9 +46,6 @@ const translations: Record<SupportedLanguage, TranslationContent> = {
   }
 };
 
-// Separate edge runtime configuration
-export const runtime = 'edge';
-
 // Create a separate function for generating the image
 async function generateTwitterImage(request: NextRequest) {
   // Get the language from the search params
@@ -187,4 +184,9 @@ async function generateTwitterImage(request: NextRequest) {
 // Export the GET handler that calls the image generation function
 export async function GET(request: NextRequest) {
   return generateTwitterImage(request);
-} 
+}
+
+// Define edge runtime configuration for the GET handler
+export const config = {
+  runtime: 'edge',
+}; 

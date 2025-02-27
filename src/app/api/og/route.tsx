@@ -47,7 +47,9 @@ const translations: Record<SupportedLanguage, TranslationContent> = {
 };
 
 // Separate edge runtime configuration
-export const runtime = 'edge';
+export const config = {
+  runtime: 'edge',
+};
 
 // Create a separate function for generating the image
 async function generateOgImage(request: NextRequest) {
