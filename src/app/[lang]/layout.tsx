@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { DynamicMetaClient } from "@/components/dynamic-meta-client";
+import { BASE_URL } from "@/constants/urls";
 
 interface LanguageLayoutProps {
   children: React.ReactNode;
@@ -32,7 +33,6 @@ const metadataByLanguage: Record<string, any> = {
 export async function generateMetadata({ params }: LanguageLayoutProps): Promise<Metadata> {
   const lang = params.lang.toLowerCase();
   const metadata = metadataByLanguage[lang] || metadataByLanguage.en;
-  const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL || "http://localhost:3000";
   
   // Add a timestamp to prevent caching
   const timestamp = Date.now();
@@ -43,9 +43,9 @@ export async function generateMetadata({ params }: LanguageLayoutProps): Promise
     openGraph: {
       title: metadata.ogTitle,
       description: metadata.ogDescription,
-      url: `${baseUrl}/${lang}`,
+      url: `${BASE_URL}/${lang}`,
       images: [{
-        url: `${baseUrl}/api/og?lang=${lang}&t=${timestamp}`,
+        url: `${BASE_URL}/api/og?lang=${lang}&t=${timestamp}`,
         width: 1200,
         height: 630,
         alt: 'Democracy Comparison',
@@ -55,10 +55,10 @@ export async function generateMetadata({ params }: LanguageLayoutProps): Promise
       card: 'summary_large_image',
       title: metadata.twitterTitle,
       description: metadata.twitterDescription,
-      images: [`${baseUrl}/api/twitter?lang=${lang}&t=${timestamp}`],
+      images: [`${BASE_URL}/api/twitter?lang=${lang}&t=${timestamp}`],
     },
     alternates: {
-      canonical: `${baseUrl}/${lang}`,
+      canonical: `${BASE_URL}/${lang}`,
     },
   };
 }
