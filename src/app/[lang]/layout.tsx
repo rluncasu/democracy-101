@@ -32,7 +32,7 @@ const metadataByLanguage: Record<string, any> = {
 export async function generateMetadata({ params }: LanguageLayoutProps): Promise<Metadata> {
   const lang = params.lang.toLowerCase();
   const metadata = metadataByLanguage[lang] || metadataByLanguage.en;
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL || "http://localhost:3000";
   
   // Add a timestamp to prevent caching
   const timestamp = Date.now();
