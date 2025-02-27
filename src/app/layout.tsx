@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { METADATA_BASE_URL } from "@/constants/urls";
+import { BASE_URL } from "@/constants/urls";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     default: 'Democracy 101',
   },
   description: 'Learn about different types of democracy',
-  metadataBase: new URL(METADATA_BASE_URL),
+  metadataBase: new URL(BASE_URL),
 };
 
 export default function RootLayout({
