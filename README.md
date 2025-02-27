@@ -12,7 +12,7 @@ Outside of this repo, you can start a new project with this template using [C3](
 npm create cloudflare@latest -- --template=cloudflare/templates/democracy-101
 ```
 
-A live public deployment of this template is available at [https://democracy-101.templates.workers.dev](https://democracy-101.templates.workers.dev)
+A live public deployment of this template is available at [https://democracy-101.radul.workers.dev](https://democracy-101.radul.workers.dev)
 
 ## Getting Started
 
@@ -44,12 +44,12 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 
 This project supports multiple languages (English and Romanian) that can be selected in two ways:
 
-1. **Via URL Parameter**: You can append `?lang=en` or `?lang=ro` to the URL to specify the language.
-   Example: `https://democracy-101.templates.workers.dev?lang=en`
+1. **Via URL Path**: You can visit `/en` or `/ro` to view the site in your preferred language.
+   Example: `https://democracy-101.radul.workers.dev/en`
 
 2. **Via UI Controls**: Use the language switcher buttons in the top-right corner of the page.
 
-When a language is selected, the URL is automatically updated with the appropriate parameter, making it easy to share language-specific links.
+When a language is selected using the UI controls, you'll be redirected to the appropriate language path, making it easy to share language-specific links.
 
 ## Deploying To Production
 

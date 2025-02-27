@@ -1,38 +1,48 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+// Define supported languages
+const SUPPORTED_LANGUAGES = ['en', 'ro'];
+const DEFAULT_LANGUAGE = 'ro';
+
 export function middleware(request: NextRequest) {
-  // Detect language from URL, cookie, or Accept-Language header
-  const language = detectLanguage(request);
+  const { pathname } = request.nextUrl;
   
-  // Clone the response and modify headers
-  const response = NextResponse.next();
+  // Skip middleware for API routes, static files, OG images, etc.
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.includes('.') ||
+    pathname.includes('opengraph-image') ||
+    pathname.includes('twitter-image') ||
+    pathname.includes('icon') ||
+    pathname.includes('favicon')
+  ) {
+    return NextResponse.next();
+  }
   
-  // Set language-specific metadata in response headers
-  // (These can be read by client-side JS to update meta tags)
-  response.headers.set('X-Language', language);
+  // Check if the path is just the root
+  if (pathname === '/') {
+    // Always redirect to Romanian by default
+    return NextResponse.redirect(new URL(`/${DEFAULT_LANGUAGE}`, request.url));
+  }
   
-  return response;
+  // Check if the current path is a language path
+  const pathSegments = pathname.split('/').filter(Boolean);
+  const firstSegment = pathSegments[0]?.toLowerCase();
+  
+  // If the first segment is a supported language, continue
+  if (SUPPORTED_LANGUAGES.includes(firstSegment)) {
+    return NextResponse.next();
+  }
+  
+  // Otherwise, redirect to the default language
+  return NextResponse.redirect(new URL(`/${DEFAULT_LANGUAGE}${pathname}`, request.url));
 }
 
-function detectLanguage(request: NextRequest): string {
-  // Check URL parameter
-  const url = new URL(request.url);
-  const langParam = url.searchParams.get('lang');
-  if (langParam && ['EN', 'RO'].includes(langParam.toUpperCase())) {
-    return langParam.toUpperCase();
-  }
-  
-  // Check cookie
-  const langCookie = request.cookies.get('language')?.value;
-  if (langCookie && ['EN', 'RO'].includes(langCookie.toUpperCase())) {
-    return langCookie.toUpperCase();
-  }
-  
-  // Check Accept-Language header
-  const acceptLanguage = request.headers.get('Accept-Language') || '';
-  if (acceptLanguage.includes('ro')) return 'RO';
-  
-  // Default to English
-  return 'EN';
-} 
+export const config = {
+  matcher: [
+    // Match all paths except static files, api routes, and image routes
+    '/((?!_next/static|_next/image|favicon.ico|opengraph-image|twitter-image|icon).*)',
+  ],
+}; 

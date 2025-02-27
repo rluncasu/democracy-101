@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from "next/navigation";
+import Head from "next/head";
 
 interface MetadataContent {
   title: string;
@@ -9,61 +11,60 @@ interface MetadataContent {
   ogDescription: string;
   twitterTitle: string;
   twitterDescription: string;
-  ogImage: string;
 }
 
 interface DynamicMetaProps {
-  language: string;
+  language?: string;
+  baseUrl?: string;
 }
 
-export function DynamicMeta({ language }: DynamicMetaProps) {
+export function DynamicMeta({ language, baseUrl }: DynamicMetaProps) {
+  const params = useParams();
+  const lang = (params?.lang as string) || language || "en";
+  const [timestamp, setTimestamp] = useState<number>(Date.now());
+  
+  // Use a default baseUrl if not provided and handle undefined
+  const defaultBaseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+  const normalizedBaseUrl = baseUrl 
+    ? (baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl)
+    : defaultBaseUrl;
+  
+  // Update timestamp when language changes to force new image URLs
   useEffect(() => {
-    // Get metadata for the current language
-    const metadata = getMetadataForLanguage(language);
-    
-    // Update meta tags
-    document.title = metadata.title;
-    
-    // Update Open Graph tags
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) ogTitle.setAttribute('content', metadata.ogTitle);
-    
-    // Update other meta tags similarly
-    const ogDesc = document.querySelector('meta[property="og:description"]');
-    if (ogDesc) ogDesc.setAttribute('content', metadata.ogDescription);
-    
-    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
-    if (twitterTitle) twitterTitle.setAttribute('content', metadata.twitterTitle);
-    
-    const twitterDesc = document.querySelector('meta[name="twitter:description"]');
-    if (twitterDesc) twitterDesc.setAttribute('content', metadata.twitterDescription);
-    
-    // Update canonical URL with language parameter
-    const canonicalLink = document.querySelector('link[rel="canonical"]');
-    if (canonicalLink) {
-      const url = new URL(window.location.href);
-      url.searchParams.set('lang', language.toLowerCase());
-      canonicalLink.setAttribute('href', url.toString());
-    } else {
-      // Create canonical link if it doesn't exist
-      const link = document.createElement('link');
-      link.rel = 'canonical';
-      const url = new URL(window.location.href);
-      url.searchParams.set('lang', language.toLowerCase());
-      link.href = url.toString();
-      document.head.appendChild(link);
-    }
-    
-    // Update og:url with language parameter
-    const ogUrl = document.querySelector('meta[property="og:url"]');
-    if (ogUrl) {
-      const url = new URL(window.location.href);
-      url.searchParams.set('lang', language.toLowerCase());
-      ogUrl.setAttribute('content', url.toString());
-    }
+    setTimestamp(Date.now());
   }, [language]);
   
-  return null; // This component doesn't render anything
+  // Get metadata for the current language
+  const metadata = language ? getMetadataForLanguage(language) : null;
+  
+  // Return null if no language or metadata
+  if (!language || !metadata) return null;
+  
+  // Generate image URLs with timestamp to prevent caching
+  const ogImageUrl = `${normalizedBaseUrl}/opengraph-image?lang=${lang.toLowerCase()}&t=${timestamp}`;
+  const twitterImageUrl = `${normalizedBaseUrl}/twitter-image?lang=${lang.toLowerCase()}&t=${timestamp}`;
+  
+  // Return meta tags directly in the component
+  return (
+    <>
+      {/* Title */}
+      <title>{metadata.title}</title>
+      
+      {/* OpenGraph tags */}
+      <meta property="og:title" content={metadata.ogTitle} />
+      <meta property="og:description" content={metadata.ogDescription} />
+      <meta property="og:image" content={ogImageUrl} />
+      <meta property="og:url" content={`${normalizedBaseUrl}/${language.toLowerCase()}`} />
+      
+      {/* Twitter tags */}
+      <meta name="twitter:title" content={metadata.twitterTitle} />
+      <meta name="twitter:description" content={metadata.twitterDescription} />
+      <meta name="twitter:image" content={twitterImageUrl} />
+      
+      {/* Canonical link */}
+      <link rel="canonical" href={`${normalizedBaseUrl}/${language.toLowerCase()}`} />
+    </>
+  );
 }
 
 function getMetadataForLanguage(lang: string): MetadataContent {
@@ -76,7 +77,6 @@ function getMetadataForLanguage(lang: string): MetadataContent {
       ogDescription: "Learn the key differences between Constitutional and Electoral Democracy systems",
       twitterTitle: "Democracy Comparison",
       twitterDescription: "Learn the key differences between Constitutional and Electoral Democracy systems",
-      ogImage: "og-image-en.jpg",
     },
     RO: {
       title: "Comparație Democrație",
@@ -85,10 +85,9 @@ function getMetadataForLanguage(lang: string): MetadataContent {
       ogDescription: "Aflați diferențele cheie între sistemele de democrație constituțională și electorală",
       twitterTitle: "Comparație Democrație",
       twitterDescription: "Aflați diferențele cheie între sistemele de democrație constituțională și electorală",
-      ogImage: "og-image-ro.jpg",
     },
   };
   
   // Return metadata for the requested language or default to English
-  return metadataByLanguage[lang] || metadataByLanguage.EN;
+  return metadataByLanguage[lang.toUpperCase()] || metadataByLanguage.EN;
 } 
