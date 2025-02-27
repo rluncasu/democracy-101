@@ -34,6 +34,9 @@ export async function generateMetadata({ params }: LanguageLayoutProps): Promise
   const metadata = metadataByLanguage[lang] || metadataByLanguage.en;
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
   
+  // Add a timestamp to prevent caching
+  const timestamp = Date.now();
+  
   return {
     title: metadata.title,
     description: metadata.description,
@@ -42,7 +45,7 @@ export async function generateMetadata({ params }: LanguageLayoutProps): Promise
       description: metadata.ogDescription,
       url: `${baseUrl}/${lang}`,
       images: [{
-        url: `${baseUrl}/${lang}/opengraph-image`,
+        url: `${baseUrl}/api/og?lang=${lang}&t=${timestamp}`,
         width: 1200,
         height: 630,
         alt: 'Democracy Comparison',
@@ -52,7 +55,7 @@ export async function generateMetadata({ params }: LanguageLayoutProps): Promise
       card: 'summary_large_image',
       title: metadata.twitterTitle,
       description: metadata.twitterDescription,
-      images: [`${baseUrl}/${lang}/twitter-image`],
+      images: [`${baseUrl}/api/twitter?lang=${lang}&t=${timestamp}`],
     },
     alternates: {
       canonical: `${baseUrl}/${lang}`,

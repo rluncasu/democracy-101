@@ -1,13 +1,7 @@
 import { ImageResponse } from 'next/og';
-import { headers } from 'next/headers';
+import { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
-export const contentType = 'image/png';
-export const alt = 'Democracy Comparison';
-export const size = {
-  width: 1200,
-  height: 630,
-};
 
 // Define language type
 type SupportedLanguage = 'en' | 'ro';
@@ -51,41 +45,16 @@ const translations: Record<SupportedLanguage, TranslationContent> = {
       title: 'Democrație Electorală',
       description: 'Axată pe alegeri libere'
     }
-  },
-  // Add more languages as needed
+  }
 };
 
-export default async function OGImage({ params }: { params?: { lang?: string } }) {
-  // Get the current language from URL params or referer
-  const headersList = headers();
-  const referer = headersList.get('referer') || '';
-  const searchParams = new URL(headersList.get('x-url') || 'http://localhost').searchParams;
-  const langParam = searchParams.get('lang');
-  
-  // Log the detected language for debugging
-  console.log('Detected language from URL:', langParam);
-  
-  // Try to get language from different sources
-  let lang: SupportedLanguage = 'en';
-  
-  // First check URL search params
-  if (langParam && (langParam.toLowerCase() as SupportedLanguage) in translations) {
-    lang = langParam.toLowerCase() as SupportedLanguage;
-    console.log('Using language:', lang);
-  } 
-  // Then check referer path
-  else {
-    const langMatch = referer.match(/\/([a-z]{2})(?:\/|$)/);
-    if (langMatch && langMatch[1] && (langMatch[1] as SupportedLanguage) in translations) {
-      lang = langMatch[1] as SupportedLanguage;
-    }
-  }
+export async function GET(request: NextRequest) {
+  // Get the language from the search params
+  const { searchParams } = new URL(request.url);
+  const lang = (searchParams.get('lang') || 'en') as SupportedLanguage;
   
   // Get translations for the current language
-  const t = translations[lang];
-
-  // Get timestamp to prevent caching
-  const timestamp = searchParams.get('t') || Date.now().toString();
+  const t = translations[lang] || translations.en;
 
   return new ImageResponse(
     (
@@ -204,13 +173,11 @@ export default async function OGImage({ params }: { params?: { lang?: string } }
             </div>
           </div>
         </div>
-        
-        {/* Timestamp to ensure uniqueness (invisible) */}
-        <div style={{ display: 'none' }}>{timestamp}</div>
       </div>
     ),
     {
-      ...size,
+      width: 1200,
+      height: 630,
     }
   );
 } 

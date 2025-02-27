@@ -1,13 +1,7 @@
 import { ImageResponse } from 'next/og';
-import { headers } from 'next/headers';
+import { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
-export const contentType = 'image/png';
-export const alt = 'Democracy Comparison';
-export const size = {
-  width: 1200,
-  height: 630,
-};
 
 // Define language type
 type SupportedLanguage = 'en' | 'ro';
@@ -51,25 +45,16 @@ const translations: Record<SupportedLanguage, TranslationContent> = {
       title: 'Democrație Electorală',
       description: 'Axată pe alegeri libere'
     }
-  },
-  // Add more languages as needed
+  }
 };
 
-export default async function TwitterImage() {
-  // Get the current language from the URL path
-  const headersList = headers();
-  const referer = headersList.get('referer') || '';
-  
-  // Extract language from URL path
-  // Default to 'en' if no language is found
-  let lang: SupportedLanguage = 'en';
-  const langMatch = referer.match(/\/([a-z]{2})(?:\/|$)/);
-  if (langMatch && langMatch[1] && (langMatch[1] as SupportedLanguage) in translations) {
-    lang = langMatch[1] as SupportedLanguage;
-  }
+export async function GET(request: NextRequest) {
+  // Get the language from the search params
+  const { searchParams } = new URL(request.url);
+  const lang = (searchParams.get('lang') || 'en') as SupportedLanguage;
   
   // Get translations for the current language
-  const t = translations[lang];
+  const t = translations[lang] || translations.en;
 
   return new ImageResponse(
     (
@@ -87,6 +72,23 @@ export default async function TwitterImage() {
           fontFamily: 'system-ui, sans-serif',
         }}
       >
+        {/* Language indicator in the top-right corner */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '20px',
+            right: '20px',
+            background: 'rgba(255, 255, 255, 0.2)',
+            padding: '8px 16px',
+            borderRadius: '20px',
+            fontSize: '24px',
+            fontWeight: 'bold',
+            display: 'flex',
+          }}
+        >
+          {lang.toUpperCase()}
+        </div>
+        
         <div
           style={{
             fontSize: 60,
@@ -174,7 +176,8 @@ export default async function TwitterImage() {
       </div>
     ),
     {
-      ...size,
+      width: 1200,
+      height: 630,
     }
   );
 } 
